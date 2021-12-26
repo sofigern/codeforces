@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from dacite import from_dict, Config
 
-from api.submission import Submission, Verdict
+from codeforces_client.api.submission import Submission, Verdict
 
 
 class TestSubmissionDataclassSupport(TestCase):

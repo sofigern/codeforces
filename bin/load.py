@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from api.client import CodeforcesAPIClient, Verdict
+from codeforces_client.api.client import CodeforcesAPIClient, Verdict
 
 
 parser = argparse.ArgumentParser()

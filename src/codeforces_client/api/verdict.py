@@ -1,6 +1,6 @@
 from enum import auto
 
-from utils.auto_name_enum import AutoNameEnum
+from codeforces_client.utils.auto_name_enum import AutoNameEnum
 
 
 class Verdict(AutoNameEnum):

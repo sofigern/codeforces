@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Dict
 
-from api.verdict import Verdict
+from codeforces_client.api.verdict import Verdict
 
 
 @dataclass
