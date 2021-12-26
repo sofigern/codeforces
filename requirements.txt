@@ -1,3 +1,4 @@
+-e .
 requests==2.26.0
 dacite==1.6.0
-ujson
+ujson==5.1.0
