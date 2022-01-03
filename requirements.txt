@@ -2,3 +2,6 @@
 requests==2.26.0
 dacite==1.6.0
 ujson==5.1.0
+pyquery==1.4.3
+backoff==1.11.1
+furl==2.1.3

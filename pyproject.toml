@@ -3,6 +3,9 @@ requires = [
     "setuptools>=42",
     "requests",
     "dacite",
-    "ujson"
+    "ujson",
+    "pyquery==1.4.3",
+    "backoff==1.11.1",
+    "furl==2.1.3"
 ]
 build-backend = "setuptools.build_meta"
