@@ -21,3 +21,7 @@ class Verdict(AutoNameEnum):
     SKIPPED = auto()
     TESTING = auto()
     REJECTED = auto()
+    ANY = auto()
+
+    def __str__(self):
+        return self.value

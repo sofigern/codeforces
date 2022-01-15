@@ -1,27 +1,14 @@
 import argparse
-from configparser import ConfigParser, RawConfigParser
 import logging
-import os
 
 from codeforces_client import VERSION
-from codeforces_client.commands.config import run as config
+from codeforces_client.api.verdict import Verdict
+from codeforces_client.commands.config import get_default_config, run as config
 from codeforces_client.commands.load import run as load
 
 
-def get_default_config() -> ConfigParser:
-    config = ConfigParser()
-    config.read([
-        os.path.expanduser(path) for path in [
-            '/etc/cf-cli/config.ini',
-            '~/.cf-cli.ini',
-        ]
-    ])
-
-    return config
-
-
 def run():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--version", "-V", action="version", version=f"%(prog)s {VERSION}")
     parser.add_argument(
         '-d', '--debug',
@@ -35,8 +22,21 @@ def run():
 
     subparsers = parser.add_subparsers()
 
-    load_parser = subparsers.add_parser("load", help="Load data from Codeforces.")
+    load_parser = subparsers.add_parser(
+        "load",
+        help="Load data from Codeforces.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     load_parser.add_argument("--handle", help="Codeforces user handle.")
+    load_parser.add_argument("--contest-id", type=int, help="Codeforces contest-id.")
+    load_parser.add_argument("--language", help="Programming language.")
+    load_parser.add_argument(
+        "--verdict",
+        type=Verdict,
+        default=Verdict.OK,
+        help="Load only submissions with chosen `verdict`. Choose `ALL` to suppress this filter.",
+        choices=list(Verdict),
+    )
     load_parser.add_argument(
         "--force", "-f", action='store_true', default=False,
         help="Rewrite already existing files."
