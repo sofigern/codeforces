@@ -2,4 +2,3 @@
 *.iml
 dist
 src/*.egg-info
-Makefile
