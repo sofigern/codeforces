@@ -7,7 +7,7 @@ Codeforces Client is a Python library and tooling for working with Codeforces.
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install codeforces-client.
 
 ```bash
-pip install -i https://test.pypi.org/simple/ codeforces-client
+pip install codeforces-client
 ```
 
 ## Usage
