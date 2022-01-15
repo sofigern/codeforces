@@ -1,6 +1,5 @@
 from argparse import Namespace
 from itertools import groupby
-import logging
 import os
 import shutil
 
@@ -10,15 +9,21 @@ from codeforces_client.utils.lang2ext import lang2ext
 
 
 def run(args: Namespace) -> None:
-    logging.info("Loading data for handle: %s", args.handle)
+    print("Loading data for")
+    for key in ["handle", "contest_id", "verdict", "language"]:
+        print(f"\t{key}:", getattr(args, key, "ANY"))
+
+    if args.language.lower() == 'any':
+        args.language = None
+
     os.makedirs(args.handle, exist_ok=True)
 
     api_client = CodeforcesAPIClient()
     submissions = api_client.user_status(args.handle)
-    available_contest_ids = [c.id for c in api_client.contest_list()]
-
-    if args.contest_id:
-        available_contest_ids = list(filter(lambda i: i == args.contest_id, available_contest_ids))
+    available_contest_ids = [
+        c.id for c in api_client.contest_list()
+        if args.contest_id is None or c.id == args.contest_id
+    ]
 
     for (contestId, index), submissions in groupby(
         submissions,
@@ -26,7 +31,6 @@ def run(args: Namespace) -> None:
     ):
         if contestId not in available_contest_ids:
             continue
-
         for (verdict, language), submissions in groupby(
             submissions,
             key=lambda s: (s.verdict, s.programmingLanguage),

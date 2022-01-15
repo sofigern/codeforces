@@ -18,4 +18,10 @@ def lang2ext(programmingLanguage: str) -> str:
     if 'java' in programmingLanguage.lower():
         return 'java'
 
+    if 'delphi' in programmingLanguage.lower():
+        return 'pas'
+
+    if 'pascal' in programmingLanguage.lower():
+        return 'pas'
+
     return programmingLanguage.lower()

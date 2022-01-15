@@ -9,6 +9,18 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install codefor
 ```bash
 pip install codeforces-client
 ```
+To configure default params like your codeforces handle or favorite programming language you can use:
+```bash
+cf-cli config
+```
+You can load all submissions you made to codeforces before with:
+```bash
+cf-cli load
+```
+Load could be specified with different params i.e. next command will load all submissions, including unsuccessful `tourist` made for the contest `2` in `delphi`. Please use `--help` for detailed info.
+```bash
+cf-cli load --handle=tourist --contest-id=2 --verdict=any --language=delphi
+```
 
 ## Usage
 
