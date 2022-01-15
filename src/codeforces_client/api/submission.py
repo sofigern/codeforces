@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Dict
 
 from codeforces_client.api.verdict import Verdict
+from codeforces_client.api.problem import Problem
 
 
 @dataclass
@@ -16,7 +17,7 @@ class Submission:
     # (or a virtual start for virtual parties), before the submission.
     relativeTimeSeconds: int
 
-    problem: Dict
+    problem: Problem
     author: Dict
     programmingLanguage: str
     verdict: Optional[Verdict]

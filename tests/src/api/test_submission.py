@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from dacite import from_dict, Config
 
-from codeforces_client.api.submission import Submission, Verdict
+from codeforces_client.api.submission import Submission, Verdict, Problem
 
 
 class TestSubmissionDataclassSupport(TestCase):
@@ -15,7 +15,16 @@ class TestSubmissionDataclassSupport(TestCase):
                     "contestId": None,
                     "creationTimeSeconds": 100,
                     "relativeTimeSeconds": 200,
-                    "problem": {"a": "b"},
+                    "problem": {
+                        "contestId": None,
+                        "problemsetName": "problemsetname",
+                        "index": "A1",
+                        "name": "Ветчина",
+                        "type": "PROGRAMMING",
+                        "points": 3.14,
+                        "rating": 1000,
+                        "tags": ["spam", "egg"],
+                    },
                     "author": {"monty": "python"},
                     "programmingLanguage": "python",
                     "verdict": "FAILED",
@@ -32,7 +41,16 @@ class TestSubmissionDataclassSupport(TestCase):
                 contestId=None,
                 creationTimeSeconds=100,
                 relativeTimeSeconds=200,
-                problem={"a": "b"},
+                problem=Problem(
+                    contestId=None,
+                    problemsetName="problemsetname",
+                    index="A1",
+                    name="Ветчина",
+                    type="PROGRAMMING",
+                    points=3.14,
+                    rating=1000,
+                    tags=["spam", "egg"],
+                ),
                 author={"monty": "python"},
                 programmingLanguage="python",
                 verdict=Verdict.FAILED,

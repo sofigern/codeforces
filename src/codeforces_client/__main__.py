@@ -29,6 +29,7 @@ def run():
     )
     load_parser.add_argument("--handle", help="Codeforces user handle.")
     load_parser.add_argument("--contest-id", type=int, help="Codeforces contest-id.")
+    load_parser.add_argument("--problem-id", help="Codeforces problem index. i.e. `A` or `B`")
     load_parser.add_argument(
         "--language", default="ANY",
         help="Programming language. Use `any` to not specify."

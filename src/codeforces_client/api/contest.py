@@ -32,3 +32,10 @@ class Contest:
     country: Optional[str]
     city: Optional[str]
     season: Optional[str]
+
+    def __eq__(self, other):
+        if isinstance(other, Contest):
+            return self.id == getattr(other, "id", None)
+        if isinstance(other, int):
+            return self.id == other
+        return self.__eq__(other)
