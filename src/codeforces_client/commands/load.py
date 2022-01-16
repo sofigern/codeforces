@@ -4,7 +4,6 @@ import os
 import shutil
 
 from codeforces_client.api.client import CodeforcesAPIClient
-from codeforces_client.api.contest import Contest
 from codeforces_client.api.submission import Submission
 from codeforces_client.api.verdict import Verdict
 from codeforces_client.utils.lang2ext import lang2ext
@@ -29,20 +28,23 @@ def run(args: Namespace) -> None:
     for key in ["handle", "contest_id", "problem_id", "verdict", "language"]:
         print(f"\t{key}:", getattr(args, key, None) or "ANY")
 
-    if args.language.lower() == 'any':
-        args.language = None
-
     os.makedirs(args.handle, exist_ok=True)
 
     api_client = CodeforcesAPIClient()
 
-    available_contests = [
+    contests = [
         c for c in api_client.contest_list()
         if args.contest_id is None or c.id == args.contest_id
     ]
+    available_contests = []
 
-    for contest in available_contests:
-        _, problems = api_client.contest_standings(contest.id)
+    for i, contest in enumerate(contests):
+        real_contest, problems = api_client.contest_standings(contest.id)
+
+        if real_contest is None:
+            continue
+        available_contests.append(real_contest)
+
         available_problems = [
             p for p in problems
             if args.problem_id is None or p.index == args.problem_id

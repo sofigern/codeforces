@@ -1,6 +1,6 @@
 import logging
 import requests
-from typing import List, Callable, Tuple
+from typing import List, Callable, Tuple, Optional
 import ujson
 
 import backoff
@@ -37,12 +37,18 @@ class CodeforcesAPIClient:
         return [from_dict(Contest, contest) for contest in result]
 
     # noinspection PyPep8Naming
-    def contest_standings(self, contestId: int) -> Tuple[Contest, List[Problem]]:
+    def contest_standings(self, contestId: int) -> Tuple[Optional[Contest], List[Problem]]:
         logging.debug("Requesting contest.standings for %s", contestId)
         response = requests.get(
             f"{self.API_URL}/contest.standings",
             params={"contestId": contestId},
         )
+
+        if response.status_code == 400:
+            if response.text:
+                if ujson.loads(response.text).get("status") == "FAILED":
+                    return None, []
+
         response.raise_for_status()
         result = ujson.loads(response.text)["result"]
         return (
