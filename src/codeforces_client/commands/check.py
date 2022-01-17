@@ -95,39 +95,38 @@ def run(args: Namespace) -> None:
                     )
                     real_output, err_output = pipeline.communicate(input_data.read())
                     diff = None
-                    expected_lines = list(expected_data.readlines())
-                    real_lines = real_output.splitlines(keepends=True)
+                    expected_lines = [line.rstrip() for line in expected_data.readlines()]
+                    real_lines = [line.rstrip() for line in real_output.splitlines()]
                     if expected_lines != real_lines:
                         diff = ndiff(expected_lines, real_lines)
-
                     if not diff:
-                        print(Fore.GREEN + f"Passed: {test_name}")
+                        print(Fore.GREEN + f"Passed: {test_name}" + Fore.RESET)
                         total_passed += 1
                     else:
-                        print(Fore.RED + f"Failed: {test_name}")
+                        print(Fore.RED + f"Failed: {test_name}" + Fore.RESET)
                         failed_diffs[test_name] = diff
 
     for test_name in failed_diffs:
         fail_str = "=" * 20 + f" Failed {test_name} " + "=" * 20
         print(Fore.RED + fail_str)
-        print("".join(diff))
-        print(Fore.RED + "=" * len(fail_str))
+        print("\n".join(failed_diffs[test_name]))
+        print(Fore.RED + "=" * len(fail_str) + Fore.RESET)
 
     if total_tests == total_passed:
         print(
             Fore.GREEN + "=" * 10 +
             f" All tests passed! Passed: {total_passed} / {total_tests} " +
-            "=" * 10
+            "=" * 10 + Fore.RESET
         )
     elif total_tests and not total_passed:
         print(
             Fore.RED + "=" * 10 +
             f" All tests failed! Passed: 0 / {total_tests} " +
-            "=" * 10
+            "=" * 10 + Fore.RESET
         )
     else:
         print(
             Fore.YELLOW + "=" * 10 +
             f" Not all tests passed! Passed: {total_passed} / {total_tests} " +
-            "=" * 10
+            "=" * 10 + Fore.RESET
         )

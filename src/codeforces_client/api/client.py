@@ -1,4 +1,6 @@
 import logging
+
+import lxml
 import requests
 from typing import List, Callable, Tuple, Optional
 import ujson
@@ -81,6 +83,16 @@ class CodeforcesAPIClient:
 
         return PyQuery(response.text)("#program-source-text").html()
 
+    @staticmethod
+    def html2str(html_block: PyQuery) -> str:
+        text_lines = []
+        for elem in html_block.contents():
+            if isinstance(elem, str):
+                text_lines.append(elem)
+            elif isinstance(elem, lxml.html.HtmlElement) and elem.tag == "br":
+                text_lines.append("\n")
+        return ''.join(text_lines)
+
     def scrape_sample_tests(self, problem: Problem) -> List[Tuple[str, str]]:
         logging.debug("Scraping code for %s", problem)
         response = self._make_request_safe(
@@ -89,9 +101,19 @@ class CodeforcesAPIClient:
             ),
             validator=lambda r: not PyQuery(r.text)(".sample-test")
         )
+
         sample_test = PyQuery(response.text)(".sample-test")
-        inputs, outputs = map(
-            lambda html: [pre.text.strip() + "\n" for pre in html],
-            [sample_test("div.input")("pre"), sample_test("div.output")("pre")]
-        )
-        return [(i, o) for i, o in zip(inputs, outputs)]
+        result = []
+
+        for input_block, output_block in zip(
+            sample_test("div.input")("pre"),
+            sample_test("div.output")("pre"),
+        ):
+            result.append(
+                (
+                    self.html2str(PyQuery(input_block)),
+                    self.html2str(PyQuery(output_block))
+                )
+            )
+
+        return result

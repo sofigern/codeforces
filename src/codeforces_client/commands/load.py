@@ -1,3 +1,4 @@
+import logging
 from argparse import Namespace
 from itertools import groupby
 import os
@@ -32,25 +33,47 @@ def run(args: Namespace) -> None:
 
     api_client = CodeforcesAPIClient()
 
-    contests = [
+    contest_list = [
         c for c in api_client.contest_list()
         if args.contest_id is None or c.id == args.contest_id
     ]
-    available_contests = []
 
-    for i, contest in enumerate(contests):
-        real_contest, problems = api_client.contest_standings(contest.id)
+    available_contests = []
+    submissions = api_client.user_status(args.handle)
+
+    submitted_contest_ids = list(
+        set(s.contestId for s in submissions if s.contestId in contest_list)
+    )
+    submitted_problems_ids = list(
+        set((s.contestId, s.problem.index) for s in submissions if s.contestId in contest_list)
+    )
+    contest_ids = submitted_contest_ids if args.contest_id is None else [args.contest_id]
+
+    for i, contest_id in enumerate(contest_ids):
+        print(f"Downloading tests for contest: {contest_id}")
+        real_contest, problems = api_client.contest_standings(contest_id)
 
         if real_contest is None:
+            logging.warning(F"Contest {contest_id} is not available. Skip.")
             continue
         available_contests.append(real_contest)
 
         available_problems = [
             p for p in problems
-            if args.problem_id is None or p.index == args.problem_id
+            if (
+                p.index == args.problem_id or
+                (args.contest_id and args.problem_id is None) or
+                (
+                    args.contest_id is None and
+                    args.problem_id is None and
+                    (p.contestId, p.index) in submitted_problems_ids
+                )
+            )
         ]
+
         for problem in available_problems:
-            path = f"{args.handle}/{contest.id}/{problem.index}/tests"
+            print(f"\tDownloading tests for problem: {contest_id}{problem.index}")
+            path = f"{args.handle}/{real_contest.id}/{problem.index}/tests"
             tests = api_client.scrape_sample_tests(problem)
             os.makedirs(path, exist_ok=True)
             for i, (input_text, output_text) in enumerate(tests, start=1):
@@ -60,7 +83,6 @@ def run(args: Namespace) -> None:
                 with open(f"{path}/sample_{i}/output.txt", "w") as file:
                     file.write(output_text)
 
-    submissions = api_client.user_status(args.handle)
     for (contestId, index), submissions in groupby(
         submissions,
         key=lambda s: (s.contestId, s.problem.index),
@@ -71,6 +93,7 @@ def run(args: Namespace) -> None:
         if args.problem_id and index != args.problem_id:
             continue
 
+        print(f"Downloading submissions for problem: {contestId}{index}")
         for (verdict, language), submissions in groupby(
             submissions,
             key=lambda s: (s.verdict, s.programmingLanguage),
